@@ -3,26 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cat Say Oh Yes - Cosmic Universe</title>
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>À Hú Studio • Cat Say Oh Yes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Quicksand', sans-serif;
         }
 
         body, html {
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background-color: #0d0614;
-            color: #fff;
+            background-color: #030108;
+            color: #ffffff;
+            font-family: 'Plus Jakarta Sans', sans-serif;
         }
 
-        /* Canvas nền vũ trụ & hiệu ứng nổ hạt */
-        #spaceCanvas {
+        /* Canvas Ngân hà xoáy 3D & Hiệu ứng nổ hạt */
+        #galaxyCanvas {
             position: fixed;
             top: 0;
             left: 0;
@@ -31,445 +31,581 @@
             z-index: 1;
         }
 
-        /* Màn hình mở đầu (Intro Nebula & Button) */
-        #introScreen {
+        /* Màn hình Intro Ngân Hà */
+        #introOverlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
             z-index: 10;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            transition: opacity 1s ease, visibility 1s ease;
-            background: radial-gradient(circle at center, rgba(45, 15, 60, 0.4) 0%, rgba(13, 6, 20, 0.9) 100%);
-            padding: 20px;
+            justify-content: space-between;
+            padding: 50px 20px 60px 20px;
             text-align: center;
-        }
-
-        #introScreen.hidden {
-            opacity: 0;
-            visibility: hidden;
+            transition: opacity 0.8s ease, transform 0.8s ease;
             pointer-events: none;
         }
 
-        .intro-content {
-            position: relative;
-            z-index: 11;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            animation: floatGlow 4s ease-in-out infinite;
+        #introOverlay.exploded {
+            opacity: 0;
+            transform: scale(1.15);
+            visibility: hidden;
         }
 
-        .fox-emblem {
-            width: 110px;
-            height: 110px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #ff758c, #ff7eb3, #9b51e0, #f6d365);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 35px rgba(255, 117, 140, 0.6), 0 0 70px rgba(155, 81, 224, 0.4);
-            margin-bottom: 25px;
-            padding: 3px;
+        .top-badge {
+            padding: 8px 20px;
+            border-radius: 50px;
+            background: rgba(15, 10, 35, 0.55);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            font-size: 0.85rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #e9d5ff;
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
         }
 
-        .fox-emblem-inner {
-            width: 100%;
-            height: 100%;
-            background: #150a21;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 50px;
+        .center-title-box {
+            margin-top: auto;
+            margin-bottom: 30px;
+            text-shadow: 0 4px 30px rgba(0, 0, 0, 0.9);
         }
 
-        h1 {
-            font-size: 2.8rem;
+        .main-brand {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: clamp(2.4rem, 7vw, 4.5rem);
             font-weight: 700;
-            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #f6d365 100%);
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #fff5eb 0%, #fbcfe8 35%, #c084fc 70%, #60a5fa 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
-            text-shadow: 0 0 30px rgba(255, 154, 158, 0.3);
+            filter: drop-shadow(0 0 25px rgba(236, 72, 153, 0.45));
+            margin-bottom: 12px;
         }
 
-        p.slogan {
-            font-size: 1.05rem;
-            color: #d8b4fe;
+        .sub-brand {
+            font-size: clamp(0.95rem, 2.5vw, 1.15rem);
+            color: #e2e8f0;
             letter-spacing: 2px;
-            margin-bottom: 35px;
-            text-shadow: 0 0 10px rgba(216, 180, 254, 0.5);
+            font-weight: 400;
+            opacity: 0.9;
         }
 
-        .explore-btn {
-            position: relative;
-            background: linear-gradient(135deg, #ff758c 0%, #9b51e0 50%, #f6d365 100%);
-            background-size: 200% auto;
-            color: white;
-            border: none;
-            padding: 16px 45px;
-            font-size: 1.1rem;
+        .sub-brand span {
+            color: #f472b6;
             font-weight: 600;
+        }
+
+        /* Nút bấm kích hoạt bùng nổ */
+        .trigger-btn {
+            pointer-events: auto;
+            position: relative;
+            padding: 16px 46px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            color: #fff;
+            background: rgba(20, 12, 45, 0.65);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(244, 114, 182, 0.6);
             border-radius: 50px;
             cursor: pointer;
-            box-shadow: 0 0 25px rgba(155, 81, 224, 0.5);
-            transition: all 0.4s ease;
-            outline: none;
-            letter-spacing: 1px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            box-shadow: 0 0 25px rgba(236, 72, 153, 0.4), inset 0 0 15px rgba(96, 165, 250, 0.3);
         }
 
-        .explore-btn:hover {
-            background-position: right center;
+        .trigger-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, #ec4899, #8b5cf6, #3b82f6, #f59e0b);
+            background-size: 300% 300%;
+            opacity: 0.35;
+            z-index: -1;
+            transition: opacity 0.4s;
+            animation: gradientFlow 5s ease infinite;
+        }
+
+        .trigger-btn:hover {
             transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 0 40px rgba(255, 117, 140, 0.8), 0 0 60px rgba(246, 211, 101, 0.6);
+            border-color: #fbcfe8;
+            box-shadow: 0 0 40px rgba(236, 72, 153, 0.8), 0 0 70px rgba(96, 165, 250, 0.5);
         }
 
-        @keyframes floatGlow {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
+        .trigger-btn:hover::before {
+            opacity: 0.85;
         }
 
-        /* Giao diện chính sau khi bùng nổ (Main Hub) */
-        #mainHub {
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Giao diện chính sau khi bùng nổ (À Hú Studio Hub) */
+        #studioHub {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
             z-index: 5;
-            display: flex;
-            flex-direction: column;
             opacity: 0;
             visibility: hidden;
-            transition: opacity 1.5s ease 0.5s;
+            transform: scale(0.95);
+            transition: opacity 1.2s ease 0.4s, transform 1.2s ease 0.4s;
             overflow-y: auto;
-            padding: 20px;
+            padding: 24px 16px 60px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        #mainHub.active {
+        #studioHub.visible {
             opacity: 1;
             visibility: visible;
+            transform: scale(1);
         }
 
-        .hub-header {
+        .navbar {
+            width: 100%;
+            max-width: 860px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            max-width: 900px;
-            width: 100%;
-            margin: 0 auto 30px auto;
-            padding: 15px 25px;
-            background: rgba(25, 12, 40, 0.6);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 154, 158, 0.2);
+            padding: 14px 24px;
+            background: rgba(12, 8, 28, 0.65);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(192, 132, 252, 0.25);
             border-radius: 20px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            margin-bottom: 28px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
-        .brand-title {
-            font-size: 1.3rem;
+        .nav-logo {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 1.25rem;
             font-weight: 700;
-            background: linear-gradient(135deg, #ff9a9e, #f6d365);
+            background: linear-gradient(135deg, #fbcfe8, #c084fc, #60a5fa);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        .hub-nav {
-            display: flex;
-            gap: 15px;
+        .nav-tag {
+            font-size: 0.8rem;
+            padding: 5px 14px;
+            border-radius: 20px;
+            background: rgba(236, 72, 153, 0.15);
+            border: 1px solid rgba(236, 72, 153, 0.4);
+            color: #fbcfe8;
+            font-weight: 600;
         }
 
-        .nav-link {
-            color: #e2e8f0;
-            text-decoration: none;
-            font-size: 0.9rem;
-            padding: 6px 14px;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s;
-        }
-
-        .nav-link:hover {
-            background: rgba(255, 117, 140, 0.2);
-            border-color: rgba(255, 117, 140, 0.4);
-            color: #fff;
-        }
-
-        .hub-container {
-            max-width: 900px;
+        .hero-card {
             width: 100%;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            padding-bottom: 40px;
-        }
-
-        .glass-card {
-            background: rgba(25, 12, 40, 0.55);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 154, 158, 0.25);
-            border-radius: 24px;
-            padding: 30px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+            max-width: 860px;
+            background: rgba(12, 8, 28, 0.6);
+            backdrop-filter: blur(18px);
+            border: 1px solid rgba(147, 197, 253, 0.25);
+            border-radius: 28px;
+            padding: 36px 28px;
             text-align: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 0 30px rgba(139, 92, 246, 0.1);
+            margin-bottom: 24px;
         }
 
-        .glass-card h2 {
-            font-size: 1.8rem;
-            margin-bottom: 12px;
-            color: #fecfef;
+        .hero-card h2 {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #ffffff, #f472b6, #93c5fd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .glass-card p {
-            color: #cbd5e1;
+        .hero-card .creator-line {
             font-size: 0.95rem;
-            line-height: 1.6;
-            margin-bottom: 20px;
+            color: #cbd5e1;
+            margin-bottom: 22px;
         }
 
-        .badge-list {
+        .hero-card .creator-line strong {
+            color: #f9a8d4;
+        }
+
+        .pill-group {
             display: flex;
+            flex-wrap: wrap;
             justify-content: center;
             gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
+            margin-bottom: 28px;
         }
 
-        .badge {
-            background: rgba(155, 81, 224, 0.2);
-            border: 1px solid rgba(155, 81, 224, 0.4);
-            padding: 6px 15px;
-            border-radius: 20px;
-            font-size: 0.85rem;
+        .pill {
+            padding: 8px 18px;
+            border-radius: 50px;
+            font-size: 0.88rem;
+            background: rgba(30, 20, 60, 0.7);
+            border: 1px solid rgba(192, 132, 252, 0.35);
             color: #f3e8ff;
-        }
-
-        .action-links {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .btn-custom {
-            display: inline-block;
-            padding: 10px 22px;
-            background: linear-gradient(135deg, #ff758c, #9b51e0);
-            color: white;
-            text-decoration: none;
-            border-radius: 30px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            box-shadow: 0 4px 15px rgba(155, 81, 224, 0.4);
             transition: all 0.3s;
         }
 
-        .btn-custom:hover {
+        .pill:hover {
+            border-color: #f472b6;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 117, 140, 0.6);
+            box-shadow: 0 5px 15px rgba(236, 72, 153, 0.3);
         }
 
-        footer {
-            text-align: center;
-            font-size: 0.8rem;
+        .grid-links {
+            width: 100%;
+            max-width: 860px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .link-card {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: left;
+            padding: 22px;
+            border-radius: 22px;
+            background: rgba(15, 10, 35, 0.65);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(168, 85, 247, 0.25);
+            text-decoration: none;
+            color: #fff;
+            transition: all 0.35s ease;
+        }
+
+        .link-card:hover {
+            transform: translateY(-4px);
+            border-color: #60a5fa;
+            box-shadow: 0 12px 30px rgba(59, 130, 246, 0.25);
+            background: rgba(25, 16, 55, 0.8);
+        }
+
+        .link-card .icon {
+            font-size: 1.6rem;
+            margin-bottom: 10px;
+        }
+
+        .link-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 6px;
+            color: #fbcfe8;
+        }
+
+        .link-card p {
+            font-size: 0.85rem;
             color: #94a3b8;
-            margin-top: 20px;
-            letter-spacing: 1px;
+            line-height: 1.5;
+        }
+
+        .footer-note {
+            font-size: 0.82rem;
+            color: #64748b;
+            text-align: center;
+            margin-top: auto;
         }
     </style>
 </head>
 <body>
 
-    <!-- Canvas Hiệu ứng vũ trụ & Bùng nổ hạt -->
-    <canvas id="spaceCanvas"></canvas>
+    <canvas id="galaxyCanvas"></canvas>
 
-    <!-- Màn hình chào mừng (Intro) -->
-    <div id="introScreen">
-        <div class="intro-content">
-            <div class="fox-emblem">
-                <div class="fox-emblem-inner">🦊</div>
-            </div>
-            <h1>Cat Say Oh Yes</h1>
-            <p class="slogan">Dream + Stars + You • Cùng bạn chạm đến những vì sao</p>
-            <button class="explore-btn" id="exploreBtn">Tham quan →</button>
+    <!-- Màn hình Ngân Hà Khởi Đầu -->
+    <div id="introOverlay">
+        <div class="top-badge">✨ À Hú Studio ✨</div>
+        
+        <div class="center-title-box">
+            <h1 class="main-brand">Cat Say Oh Yes</h1>
+            <p class="sub-brand">Dream • Stars • <span>À Hú Studio</span></p>
         </div>
+
+        <button class="trigger-btn" id="explodeBtn">Khám phá vũ trụ →</button>
     </div>
 
     <!-- Giao diện chính sau khi bùng nổ -->
-    <div id="mainHub">
-        <div class="hub-header">
-            <div class="brand-title">✨ Cat Say Oh Yes</div>
-            <div class="hub-nav">
-                <a href="#" class="nav-link">Nhạc nền</a>
-                <a href="#" class="nav-link">Fanpage</a>
-                <a href="#" class="nav-link">NGL</a>
+    <div id="studioHub">
+        <nav class="navbar">
+            <div class="nav-logo">À Hú Studio</div>
+            <div class="nav-tag">✦ Cat Say Oh Yes</div>
+        </nav>
+
+        <section class="hero-card">
+            <h2>Chào mừng đến với À Hú Studio</h2>
+            <p class="creator-line">Không gian sáng tạo AI Roleplay, Character Bots & Visual của <strong>Cat Say Oh Yes</strong></p>
+            
+            <div class="pill-group">
+                <div class="pill">🌌 AI Roleplay Bots</div>
+                <div class="pill">✨ Prompt & Kịch bản</div>
+                <div class="pill">🎨 Visual & Edits</div>
+                <div class="pill">💫 Cộng đồng Giao lưu</div>
             </div>
+        </section>
+
+        <div class="grid-links">
+            <a href="#" class="link-card">
+                <div class="icon">📘</div>
+                <h3>Fanpage À Hú Studio</h3>
+                <p>Cập nhật các bot mới nhất, chia sẻ prompt và giao lưu cùng cộng đồng roleplay.</p>
+            </a>
+
+            <a href="#" class="link-card">
+                <div class="icon">🤖</div>
+                <h3>Kho Nhân Vật AI</h3>
+                <p>Danh sách các nhân vật độc quyền được thiết kế tỉ mỉ bởi Cat Say Oh Yes.</p>
+            </a>
+
+            <a href="#" class="link-card">
+                <div class="icon">💌</div>
+                <h3>Hòm Thư Góp Ý / NGL</h3>
+                <p>Gửi tin nhắn ẩn danh, đặt hàng ý tưởng bot hoặc tâm sự cùng mình tại đây.</p>
+            </a>
         </div>
 
-        <div class="hub-container">
-            <div class="glass-card">
-                <h2>Chuồng Pet Nhà Rin</h2>
-                <p>Không gian lưu trữ nhân vật bot độc quyền, góc tranh sáng tác và thế giới ấm cúng của Cáo Rin với tone màu vũ trụ hồng tím vàng huyền ảo.</p>
-                <div class="badge-list">
-                    <span class="badge">🦊 Nhân Vật</span>
-                    <span class="badge">🎨 Góc Khoe Tranh</span>
-                    <span class="badge">🎵 Playlist Chill</span>
-                    <span class="badge">💌 Confession</span>
-                </div>
-                <div class="action-links">
-                    <a href="#" class="btn-custom">Khám phá Bot ngay</a>
-                </div>
-            </div>
-
-            <footer>
-                Made with ❤️ for bot creators & roleplayers • Cat Say Oh Yes Studio
-            </footer>
-        </div>
+        <footer class="footer-note">
+            © 2026 À Hú Studio • Created by Cat Say Oh Yes
+        </footer>
     </div>
 
     <script>
-        const canvas = document.getElementById('spaceCanvas');
+        const canvas = document.getElementById('galaxyCanvas');
         const ctx = canvas.getContext('2d');
 
-        let width, height;
+        let width, height, cx, cy;
         function resize() {
             width = canvas.width = window.innerWidth;
             height = canvas.height = window.innerHeight;
+            cx = width / 2;
+            cy = height * 0.46; // Đặt tâm ngân hà hơi chếch lên trên cho cân bố cục
         }
         window.addEventListener('resize', resize);
         resize();
 
-        // Hệ thống hạt vũ trụ (Stars & Nebula dust)
-        let particles = [];
-        const numParticles = 180;
-        let isExploding = false;
-        let explosionProgress = 0;
+        let state = 'galaxy'; // 'galaxy' -> 'exploding' -> 'aftermath'
+        let galaxyRotation = 0;
 
-        class Particle {
-            constructor(isExplosionCore = false) {
-                this.reset(isExplosionCore);
+        // 1. Các hạt tạo nên Dải Ngân Hà Xoáy 3D (Spiral Galaxy)
+        const galaxyParticles = [];
+        const totalGalaxyStars = 1400;
+        const arms = 4; // Số cánh tay xoắn ốc
+
+        for (let i = 0; i < totalGalaxyStars; i++) {
+            const distRatio = Math.pow(Math.random(), 1.6); // Tập trung dày ở lõi
+            const maxRadius = Math.min(width, height) * 0.65 + 120;
+            const radius = distRatio * maxRadius;
+            const armAngle = (i % arms) * ((Math.PI * 2) / arms);
+            const spinAngle = radius * 0.0085;
+            const scatter = (Math.random() - 0.5) * (0.5 + distRatio * 0.9);
+
+            // Phối màu chuẩn ảnh mẫu: Lõi vàng/trắng -> Hồng -> Tím -> Xanh dương vũ trụ
+            let color;
+            if (distRatio < 0.16) {
+                color = '#fff7ed'; // Lõi trắng vàng rực
+            } else if (distRatio < 0.34) {
+                color = Math.random() > 0.4 ? '#f472b6' : '#fb923c'; // Hồng cam
+            } else if (distRatio < 0.62) {
+                color = Math.random() > 0.3 ? '#a855f7' : '#e879f9'; // Tím mộng mơ
+            } else {
+                color = Math.random() > 0.3 ? '#3b82f6' : '#38bdf8'; // Xanh vũ trụ sâu thẳm
             }
 
-            reset(isExplosionCore = false) {
-                if (isExplosionCore) {
-                    // Xuất phát từ tâm màn hình khi nổ
-                    this.x = width / 2;
-                    this.y = height / 2;
-                    const angle = Math.random() * Math.PI * 2;
-                    const speed = Math.random() * 18 + 4;
-                    this.vx = Math.cos(angle) * speed;
-                    this.vy = Math.sin(angle) * speed;
+            galaxyParticles.push({
+                radius: radius,
+                baseAngle: armAngle + spinAngle + scatter,
+                size: Math.random() * 2.2 + (1 - distRatio) * 1.5,
+                color: color,
+                alpha: Math.random() * 0.75 + 0.25,
+                speed: (1.2 - distRatio * 0.6) * 0.0025,
+                // Biến dùng cho lúc bùng nổ
+                x: 0,
+                y: 0,
+                vx: 0,
+                vy: 0
+            });
+        }
+
+        // 2. Các ngôi sao nền & Sao 4 cánh lấp lánh (Twinkling 4-point stars)
+        const bgStars = [];
+        for (let i = 0; i < 160; i++) {
+            bgStars.push({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                size: Math.random() * 1.8 + 0.5,
+                isSparkle: Math.random() > 0.85, // 15% là sao 4 cánh rực sáng
+                phase: Math.random() * Math.PI * 2,
+                speed: Math.random() * 0.04 + 0.015,
+                color: Math.random() > 0.5 ? '#ffffff' : '#bae6fd'
+            });
+        }
+
+        // 3. Hạt bùng nổ bổ sung (Explosion Sparks)
+        let explosionSparks = [];
+
+        function drawFourPointStar(x, y, radius, alpha, color) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.globalAlpha = alpha;
+            ctx.fillStyle = color;
+            ctx.shadowBlur = 12;
+            ctx.shadowColor = color;
+
+            ctx.beginPath();
+            ctx.moveTo(0, -radius * 3.5);
+            ctx.quadraticCurveTo(0, 0, radius * 3.5, 0);
+            ctx.quadraticCurveTo(0, 0, 0, radius * 3.5);
+            ctx.quadraticCurveTo(0, 0, -radius * 3.5, 0);
+            ctx.quadraticCurveTo(0, 0, 0, -radius * 3.5);
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function animate() {
+            // Tạo vệt mờ nhẹ khi bùng nổ để hạt bay có đuôi ánh sáng mượt
+            ctx.fillStyle = state === 'exploding' ? 'rgba(3, 1, 8, 0.22)' : 'rgba(3, 1, 8, 0.85)';
+            ctx.fillRect(0, 0, width, height);
+
+            // Vẽ sao nền lấp lánh
+            bgStars.forEach(star => {
+                star.phase += star.speed;
+                const twinkle = 0.35 + Math.abs(Math.sin(star.phase)) * 0.65;
+
+                if (star.isSparkle) {
+                    drawFourPointStar(star.x, star.y, star.size * 1.6, twinkle, star.color);
                 } else {
-                    // Trạng thái ngân hà lơ lửng ban đầu
-                    this.x = Math.random() * width;
-                    this.y = Math.random() * height;
-                    this.vx = (Math.random() - 0.5) * 0.3;
-                    this.vy = (Math.random() - 0.5) * 0.3;
+                    ctx.save();
+                    ctx.globalAlpha = twinkle;
+                    ctx.fillStyle = star.color;
+                    ctx.beginPath();
+                    ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
                 }
-                this.size = Math.random() * 2.5 + 0.5;
-                this.alpha = Math.random() * 0.7 + 0.3;
-                this.decay = Math.random() * 0.008 + 0.002;
-                
-                // Phối màu: Hồng, Tím, Vàng lấp lánh
-                const colors = ['#ff758c', '#ff7eb3', '#b19cd9', '#f6d365', '#ffffff'];
-                this.color = colors[Math.floor(Math.random() * colors.length)];
-            }
+            });
 
-            update() {
-                if (isExploding) {
-                    this.x += this.vx;
-                    this.y += this.vy;
-                    this.vx *= 0.96; // Giảm tốc dần
-                    this.vy *= 0.96;
-                    this.alpha -= 0.005;
-                } else {
-                    this.x += this.vx;
-                    this.y += this.vy;
-                    // Hiệu ứng lấp lánh nhẹ
-                    this.alpha += (Math.random() - 0.5) * 0.05;
-                    if (this.alpha < 0.2) this.alpha = 0.2;
-                    if (this.alpha > 0.9) this.alpha = 0.9;
-                }
+            // Vẽ ánh sáng lõi ngân hà (Core Glow)
+            if (state === 'galaxy') {
+                const coreGlow = ctx.createRadialGradient(cx, cy, 5, cx, cy, Math.min(width, height) * 0.45);
+                coreGlow.addColorStop(0, 'rgba(255, 247, 237, 0.65)');
+                coreGlow.addColorStop(0.18, 'rgba(244, 114, 182, 0.32)');
+                coreGlow.addColorStop(0.45, 'rgba(139, 92, 246, 0.16)');
+                coreGlow.addColorStop(0.75, 'rgba(37, 99, 235, 0.08)');
+                coreGlow.addColorStop(1, 'transparent');
 
-                // Vòng lặp qua biên màn hình (cho trạng thái thường)
-                if (!isExploding) {
-                    if (this.x < 0) this.x = width;
-                    if (this.x > width) this.x = 0;
-                    if (this.y < 0) this.y = height;
-                    if (this.y > height) this.y = 0;
-                }
-            }
-
-            draw() {
                 ctx.save();
-                ctx.globalAlpha = Math.max(this.alpha, 0);
-                ctx.fillStyle = this.color;
-                ctx.shadowBlur = 10;
-                ctx.shadowColor = this.color;
+                ctx.translate(cx, cy);
+                ctx.scale(1.35, 0.58); // Ép dẹt tạo góc nhìn 3D nghiêng như ảnh mẫu
+                ctx.fillStyle = coreGlow;
                 ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.arc(0, 0, Math.min(width, height) * 0.45, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.restore();
             }
-        }
 
-        // Khởi tạo các hạt sao
-        function initParticles() {
-            particles = [];
-            for (let i = 0; i < numParticles; i++) {
-                particles.push(new Particle(false));
-            }
-        }
-        initParticles();
+            // Cập nhật & vẽ các hạt ngân hà
+            galaxyRotation += 0.002;
+            galaxyParticles.forEach(p => {
+                if (state === 'galaxy') {
+                    p.baseAngle += p.speed;
+                    const angle = p.baseAngle + galaxyRotation;
+                    // Chiếu 3D nghiêng (ngang rộng 1.35, dọc dẹt 0.52)
+                    p.x = cx + Math.cos(angle) * p.radius * 1.35;
+                    p.y = cy + Math.sin(angle) * p.radius * 0.52;
+                } else {
+                    // Trạng thái bùng nổ: bay văng ra tứ phía
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vx *= 0.975;
+                    p.vy *= 0.975;
+                    if (state === 'aftermath') {
+                        // Sau khi nổ xong, hạt trôi lững lờ nhẹ nhàng
+                        p.x += (Math.random() - 0.5) * 0.4;
+                        p.y += (Math.random() - 0.5) * 0.4;
+                    }
+                }
 
-        // Vòng lặp vẽ liên tục (Animation Loop)
-        function animate() {
-            ctx.clearRect(0, 0, width, height);
+                ctx.save();
+                ctx.globalAlpha = p.alpha;
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            });
 
-            // Vẽ hiệu ứng dải ngân hà mờ ảo phía sau
-            let gradient = ctx.createRadialGradient(width/2, height/2, 50, width/2, height/2, width/1.2);
-            gradient.addColorStop(0, 'rgba(155, 81, 224, 0.15)');
-            gradient.addColorStop(0.5, 'rgba(255, 117, 140, 0.08)');
-            gradient.addColorStop(1, 'transparent');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, width, height);
+            // Vẽ các tia lửa bùng nổ thêm
+            explosionSparks.forEach((s, idx) => {
+                s.x += s.vx;
+                s.y += s.vy;
+                s.vx *= 0.96;
+                s.vy *= 0.96;
+                s.alpha -= 0.012;
 
-            particles.forEach(p => {
-                p.update();
-                p.draw();
+                if (s.alpha <= 0) {
+                    explosionSparks.splice(idx, 1);
+                } else {
+                    ctx.save();
+                    ctx.globalAlpha = s.alpha;
+                    ctx.fillStyle = s.color;
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = s.color;
+                    ctx.beginPath();
+                    ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                }
             });
 
             requestAnimationFrame(animate);
         }
         animate();
 
-        // Xử lý sự kiện khi bấm nút "Tham quan"
-        const exploreBtn = document.getElementById('exploreBtn');
-        const introScreen = document.getElementById('introScreen');
-        const mainHub = document.getElementById('mainHub');
+        // Kích hoạt sự kiện Bùng Nổ Hạt khi bấm nút
+        const explodeBtn = document.getElementById('explodeBtn');
+        const introOverlay = document.getElementById('introOverlay');
+        const studioHub = document.getElementById('studioHub');
 
-        exploreBtn.addEventListener('click', () => {
-            if (isExploding) return;
-            isExploding = true;
+        explodeBtn.addEventListener('click', () => {
+            if (state !== 'galaxy') return;
+            state = 'exploding';
 
-            // Biến đổi toàn bộ hạt thành hiệu ứng bùng nổ tung tóe
-            particles = [];
-            for (let i = 0; i < 400; i++) {
-                particles.push(new Particle(true));
+            // Tính vận tốc văng từ tâm ngân hà cho toàn bộ 1400 hạt
+            galaxyParticles.forEach(p => {
+                const dx = p.x - cx;
+                const dy = p.y - cy;
+                const angle = Math.atan2(dy, dx) + (Math.random() - 0.5) * 0.5;
+                const force = Math.random() * 22 + 6;
+                p.vx = Math.cos(angle) * force;
+                p.vy = Math.sin(angle) * force;
+            });
+
+            // Tạo thêm 350 hạt bụi sáng bùng nổ từ chính tâm lõi
+            const sparkColors = ['#ffffff', '#fbcfe8', '#f472b6', '#c084fc', '#60a5fa', '#fcd34d'];
+            for (let i = 0; i < 350; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 26 + 3;
+                explosionSparks.push({
+                    x: cx,
+                    y: cy,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    size: Math.random() * 3 + 1,
+                    alpha: 1,
+                    color: sparkColors[Math.floor(Math.random() * sparkColors.length)]
+                });
             }
 
-            // Ẩn màn hình intro, hiện giao diện chính
-            introScreen.classList.add('hidden');
-            mainHub.classList.add('active');
+            // Chuyển cảnh mượt mà sang giao diện À Hú Studio
+            introOverlay.classList.add('exploded');
+            studioHub.classList.add('visible');
+
+            setTimeout(() => {
+                state = 'aftermath';
+            }, 1400);
         });
     </script>
 </body>
-  </html>
-  
+</html>
