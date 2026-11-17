@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cat Say Oh Yes - Cosmic Universe</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Quicksand', sans-serif;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #0d0614;
+            color: #fff;
+        }
+
+        /* Canvas nền vũ trụ & hiệu ứng nổ hạt */
+        #spaceCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* Màn hình mở đầu (Intro Nebula & Button) */
+        #introScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 1s ease, visibility 1s ease;
+            background: radial-gradient(circle at center, rgba(45, 15, 60, 0.4) 0%, rgba(13, 6, 20, 0.9) 100%);
+            padding: 20px;
+            text-align: center;
+        }
+
+        #introScreen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .intro-content {
+            position: relative;
+            z-index: 11;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: floatGlow 4s ease-in-out infinite;
+        }
+
+        .fox-emblem {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff758c, #ff7eb3, #9b51e0, #f6d365);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 35px rgba(255, 117, 140, 0.6), 0 0 70px rgba(155, 81, 224, 0.4);
+            margin-bottom: 25px;
+            padding: 3px;
+        }
+
+        .fox-emblem-inner {
+            width: 100%;
+            height: 100%;
+            background: #150a21;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #f6d365 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            text-shadow: 0 0 30px rgba(255, 154, 158, 0.3);
+        }
+
+        p.slogan {
+            font-size: 1.05rem;
+            color: #d8b4fe;
+            letter-spacing: 2px;
+            margin-bottom: 35px;
+            text-shadow: 0 0 10px rgba(216, 180, 254, 0.5);
+        }
+
+        .explore-btn {
+            position: relative;
+            background: linear-gradient(135deg, #ff758c 0%, #9b51e0 50%, #f6d365 100%);
+            background-size: 200% auto;
+            color: white;
+            border: none;
+            padding: 16px 45px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 0 25px rgba(155, 81, 224, 0.5);
+            transition: all 0.4s ease;
+            outline: none;
+            letter-spacing: 1px;
+        }
+
+        .explore-btn:hover {
+            background-position: right center;
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 0 40px rgba(255, 117, 140, 0.8), 0 0 60px rgba(246, 211, 101, 0.6);
+        }
+
+        @keyframes floatGlow {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        /* Giao diện chính sau khi bùng nổ (Main Hub) */
+        #mainHub {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 1.5s ease 0.5s;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        #mainHub.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .hub-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto 30px auto;
+            padding: 15px 25px;
+            background: rgba(25, 12, 40, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 154, 158, 0.2);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .brand-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ff9a9e, #f6d365);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hub-nav {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-link {
+            color: #e2e8f0;
+            text-decoration: none;
+            font-size: 0.9rem;
+            padding: 6px 14px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 117, 140, 0.2);
+            border-color: rgba(255, 117, 140, 0.4);
+            color: #fff;
+        }
+
+        .hub-container {
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding-bottom: 40px;
+        }
+
+        .glass-card {
+            background: rgba(25, 12, 40, 0.55);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 154, 158, 0.25);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+            text-align: center;
+        }
+
+        .glass-card h2 {
+            font-size: 1.8rem;
+            margin-bottom: 12px;
+            color: #fecfef;
+        }
+
+        .glass-card p {
+            color: #cbd5e1;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .badge-list {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .badge {
+            background: rgba(155, 81, 224, 0.2);
+            border: 1px solid rgba(155, 81, 224, 0.4);
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #f3e8ff;
+        }
+
+        .action-links {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn-custom {
+            display: inline-block;
+            padding: 10px 22px;
+            background: linear-gradient(135deg, #ff758c, #9b51e0);
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 15px rgba(155, 81, 224, 0.4);
+            transition: all 0.3s;
+        }
+
+        .btn-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 117, 140, 0.6);
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-top: 20px;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Canvas Hiệu ứng vũ trụ & Bùng nổ hạt -->
+    <canvas id="spaceCanvas"></canvas>
+
+    <!-- Màn hình chào mừng (Intro) -->
+    <div id="introScreen">
+        <div class="intro-content">
+            <div class="fox-emblem">
+                <div class="fox-emblem-inner">🦊</div>
+            </div>
+            <h1>Cat Say Oh Yes</h1>
+            <p class="slogan">Dream + Stars + You • Cùng bạn chạm đến những vì sao</p>
+            <button class="explore-btn" id="exploreBtn">Tham quan →</button>
+        </div>
+    </div>
+
+    <!-- Giao diện chính sau khi bùng nổ -->
+    <div id="mainHub">
+        <div class="hub-header">
+            <div class="brand-title">✨ Cat Say Oh Yes</div>
+            <div class="hub-nav">
+                <a href="#" class="nav-link">Nhạc nền</a>
+                <a href="#" class="nav-link">Fanpage</a>
+                <a href="#" class="nav-link">NGL</a>
+            </div>
+        </div>
+
+        <div class="hub-container">
+            <div class="glass-card">
+                <h2>Chuồng Pet Nhà Rin</h2>
+                <p>Không gian lưu trữ nhân vật bot độc quyền, góc tranh sáng tác và thế giới ấm cúng của Cáo Rin với tone màu vũ trụ hồng tím vàng huyền ảo.</p>
+                <div class="badge-list">
+                    <span class="badge">🦊 Nhân Vật</span>
+                    <span class="badge">🎨 Góc Khoe Tranh</span>
+                    <span class="badge">🎵 Playlist Chill</span>
+                    <span class="badge">💌 Confession</span>
+                </div>
+                <div class="action-links">
+                    <a href="#" class="btn-custom">Khám phá Bot ngay</a>
+                </div>
+            </div>
+
+            <footer>
+                Made with ❤️ for bot creators & roleplayers • Cat Say Oh Yes Studio
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('spaceCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let width, height;
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        // Hệ thống hạt vũ trụ (Stars & Nebula dust)
+        let particles = [];
+        const numParticles = 180;
+        let isExploding = false;
+        let explosionProgress = 0;
+
+        class Particle {
+            constructor(isExplosionCore = false) {
+                this.reset(isExplosionCore);
+            }
+
+            reset(isExplosionCore = false) {
+                if (isExplosionCore) {
+                    // Xuất phát từ tâm màn hình khi nổ
+                    this.x = width / 2;
+                    this.y = height / 2;
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = Math.random() * 18 + 4;
+                    this.vx = Math.cos(angle) * speed;
+                    this.vy = Math.sin(angle) * speed;
+                } else {
+                    // Trạng thái ngân hà lơ lửng ban đầu
+                    this.x = Math.random() * width;
+                    this.y = Math.random() * height;
+                    this.vx = (Math.random() - 0.5) * 0.3;
+                    this.vy = (Math.random() - 0.5) * 0.3;
+                }
+                this.size = Math.random() * 2.5 + 0.5;
+                this.alpha = Math.random() * 0.7 + 0.3;
+                this.decay = Math.random() * 0.008 + 0.002;
+                
+                // Phối màu: Hồng, Tím, Vàng lấp lánh
+                const colors = ['#ff758c', '#ff7eb3', '#b19cd9', '#f6d365', '#ffffff'];
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+            }
+
+            update() {
+                if (isExploding) {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    this.vx *= 0.96; // Giảm tốc dần
+                    this.vy *= 0.96;
+                    this.alpha -= 0.005;
+                } else {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    // Hiệu ứng lấp lánh nhẹ
+                    this.alpha += (Math.random() - 0.5) * 0.05;
+                    if (this.alpha < 0.2) this.alpha = 0.2;
+                    if (this.alpha > 0.9) this.alpha = 0.9;
+                }
+
+                // Vòng lặp qua biên màn hình (cho trạng thái thường)
+                if (!isExploding) {
+                    if (this.x < 0) this.x = width;
+                    if (this.x > width) this.x = 0;
+                    if (this.y < 0) this.y = height;
+                    if (this.y > height) this.y = 0;
+                }
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = Math.max(this.alpha, 0);
+                ctx.fillStyle = this.color;
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        // Khởi tạo các hạt sao
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < numParticles; i++) {
+                particles.push(new Particle(false));
+            }
+        }
+        initParticles();
+
+        // Vòng lặp vẽ liên tục (Animation Loop)
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+
+            // Vẽ hiệu ứng dải ngân hà mờ ảo phía sau
+            let gradient = ctx.createRadialGradient(width/2, height/2, 50, width/2, height/2, width/1.2);
+            gradient.addColorStop(0, 'rgba(155, 81, 224, 0.15)');
+            gradient.addColorStop(0.5, 'rgba(255, 117, 140, 0.08)');
+            gradient.addColorStop(1, 'transparent');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, width, height);
+
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // Xử lý sự kiện khi bấm nút "Tham quan"
+        const exploreBtn = document.getElementById('exploreBtn');
+        const introScreen = document.getElementById('introScreen');
+        const mainHub = document.getElementById('mainHub');
+
+        exploreBtn.addEventListener('click', () => {
+            if (isExploding) return;
+            isExploding = true;
+
+            // Biến đổi toàn bộ hạt thành hiệu ứng bùng nổ tung tóe
+            particles = [];
+            for (let i = 0; i < 400; i++) {
+                particles.push(new Particle(true));
+            }
+
+            // Ẩn màn hình intro, hiện giao diện chính
+            introScreen.classList.add('hidden');
+            mainHub.classList.add('active');
+        });
+    </script>
+</body>
+  </html>
+  
